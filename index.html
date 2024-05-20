@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공학용 계산기</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .calculator {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .display {
+            background-color: #222;
+            color: #fff;
+            font-size: 2em;
+            text-align: right;
+            padding: 20px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+        }
+        .button {
+            background-color: #e0e0e0;
+            border: 1px solid #ddd;
+            padding: 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            text-align: center;
+        }
+        .button:active {
+            background-color: #ccc;
+        }
+        .button.operator {
+            background-color: #f9a825;
+            color: white;
+        }
+        .button.operator:active {
+            background-color: #f57f17;
+        }
+        .button.double {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <div class="button operator" onclick="clearDisplay()">C</div>
+            <div class="button operator" onclick="deleteDigit()">DEL</div>
+            <div class="button operator" onclick="inputOperator('%')">%</div>
+            <div class="button operator" onclick="inputOperator('/')">/</div>
+            <div class="button" onclick="inputDigit('7')">7</div>
+            <div class="button" onclick="inputDigit('8')">8</div>
+            <div class="button" onclick="inputDigit('9')">9</div>
+            <div class="button operator" onclick="inputOperator('*')">*</div>
+            <div class="button" onclick="inputDigit('4')">4</div>
+            <div class="button" onclick="inputDigit('5')">5</div>
+            <div class="button" onclick="inputDigit('6')">6</div>
+            <div class="button operator" onclick="inputOperator('-')">-</div>
+            <div class="button" onclick="inputDigit('1')">1</div>
+            <div class="button" onclick="inputDigit('2')">2</div>
+            <div class="button" onclick="inputDigit('3')">3</div>
+            <div class="button operator" onclick="inputOperator('+')">+</div>
+            <div class="button double" onclick="inputDigit('0')">0</div>
+            <div class="button" onclick="inputDigit('.')">.</div>
+            <div class="button operator" onclick="calculate()">=</div>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentInput = '';
+        let operator = '';
+        let previousInput = '';
+
+        function inputDigit(digit) {
+            if (currentInput.length < 10) {
+                if (currentInput === '0' && digit === '0') return;
+                if (currentInput === '0' && digit !== '.') currentInput = '';
+                currentInput += digit;
+                updateDisplay();
+            }
+        }
+
+        function inputOperator(op) {
+            if (currentInput === '' && previousInput !== '') {
+                operator = op;
+                return;
+            }
+            if (operator !== '') calculate();
+            operator = op;
+            previousInput = currentInput;
+            currentInput = '';
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            previousInput = '';
+            operator = '';
+            updateDisplay();
+        }
+
+        function deleteDigit() {
+            currentInput = currentInput.slice(0, -1);
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            display.innerText = currentInput === '' ? '0' : currentInput;
+        }
+
+        function calculate() {
+            if (previousInput === '' || currentInput === '' || operator === '') return;
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                case '%':
+                    result = prev % current;
+                    break;
+                default:
+                    return;
+            }
+            currentInput = result.toString();
+            previousInput = '';
+            operator = '';
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
